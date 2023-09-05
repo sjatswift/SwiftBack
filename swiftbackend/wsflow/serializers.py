@@ -8,44 +8,100 @@ from rootApp.models import SwiftUser
 #         model = Message
 #         exclude = ('time_sent')
 
+class DriverUUIDSerializer(serializers.ModelSerializer):
+    def create(self,validated_data):
+        user = SwiftUser.objects.get(user_id=validated_data['driver'])
+        return user
+    
+    class Meta:
+        model = SwiftUser
+        fields = "__all__"
+
+class RiderUUIDSerializer(serializers.ModelSerializer):
+    def create(self,validated_data):
+        user = SwiftUser.objects.get(user_id=validated_data['rider'])
+        return user
+
+    class Meta:
+        model = SwiftUser
+        fields = "__all__"
+
+# class RideSerializer(serializers.ModelSerializer):
+
+
+#     def create(self, validated_data):
+
+#         driver = serializers.PrimaryKeyRelatedField(read_only=True)
+#         rider = serializers.PrimaryKeyRelatedField(read_only=True)
+#         # collegeName = validated_data['collegeName']
+#         arrival_time = validated_data['arrival_time']
+#         departure_time = validated_data['departure_time']
+        
+#         # Retrieve the driver and rider objects
+#         # driver = SwiftUser.objects.get(id=validated_data['driver'])
+#         # rider = SwiftUser.objects.get(user_id=validated_data['riderUserID'])
+        
+#         # Retrieve the collegeName of the driver
+#         print(driver)
+#         collegeName = driver['collegeName']
+        
+#         # Assuming rider_home_location and taker_home_location need to be set based on the driver's home_location
+#         rider_home_location = driver.home_location
+#         taker_home_location = driver.home_location
+
+#         # Create the Ride object with the validated data
+#         ride = Ride.objects.create(
+#             driver=driver,
+#             rider=rider,
+#             collegeName=collegeName,
+#             rider_home_location=rider_home_location,
+#             taker_home_location=taker_home_location,
+#             arrival_time=arrival_time,
+#             departure_time=departure_time
+#         )   
+
+#         return ride
+    
+#     class Meta:
+#         model = Ride
+#         fields = "__all__"
+   
 class RideSerializer(serializers.ModelSerializer):
+
+    # def create(self, validated_data):
+    #     # Retrieve the driver and rider objects
+    #     print(validated_data)
+        # driver_id = validated_data['driver']
+        # rider_id = validated_data['rider']
+
+        # Retrieve the collegeName of the driver
+        # collegeName = driver.collegeName
+        
+        # Assuming rider_home_location and taker_home_location need to be set based on the driver's home_location
+        # rider_home_location = driver.home_location
+        # taker_home_location = driver.home_location
+
+        # Extract other validated data
+        # arrival_time = validated_data['arrival_time']
+        # departure_time = validated_data['departure_time']
+
+        # # Create the Ride object with the retrieved data
+        # ride = Ride.objects.create(
+        #     driver=driver,
+        #     rider=rider,
+        #     collegeName=collegeName,
+        #     rider_home_location=rider_home_location,
+        #     taker_home_location=taker_home_location,
+        #     arrival_time=arrival_time,
+        #     departure_time=departure_time
+        # )   
+
+        # return ride
+    
     class Meta:
         model = Ride
-        field = '__all__'
+        fields = "__all__"
 
-
-    def create(self, validated_data):
-        """
-            Create a ride
-
-             @param validated_data
-             @return Ride
-
-             
-             ----This data will be sent to the server ----
-
-             validated_data = {
-             'driverUserID': driver.user_id,
-             'riderUserID': rider.user_id,
-             'arrival_time': '2020-01-01 00:00:00',
-             'departure_time': '2020-01-01 00:00:00',
-             }
-
-
-        """
-
-        driver = SwiftUser.objects.get(user_id=validated_data['driverUserID'])
-        rider = SwiftUser.objects.get(user_id=validated_data['riderUserID'])
-        
-        arrival_time = validated_data['arrival_time']
-        departure_time = validated_data['departure_time']
-
-        college_name = driver.collegeName
-        rider_home_location = rider.home_location
-        taker_home_location = driver.home_location
-
-        return super().create(validated_data)
-    
 
 class ShowDriverListSerializer(serializers.ModelSerializer):
     class Meta:

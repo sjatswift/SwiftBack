@@ -9,9 +9,11 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-
+from django_user_agents.utils import get_user_agent
+from django.contrib.auth import authenticate
 
 from rest_framework_simplejwt.tokens import RefreshToken
+
 
 """
 VIEW for Register API 
@@ -49,6 +51,8 @@ def SignUpView(request):
         serializer.validated_data['password'] = password
         user = serializer.save()
 
+       
+
         # Generate tokens for the registered user
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
@@ -57,13 +61,15 @@ def SignUpView(request):
         serialized_user = LogInSerializer(user).data
 
         response = Response({
-            'access_token': access_token,
-            'user': serialized_user,
-        })
+                'access_token': access_token,
+                'user': serialized_user,
+            })
 
         response.set_cookie(key='refreshtoken', value=refresh_token, httponly=True)
 
-        return response
+       
+
+        return response    
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -114,21 +120,27 @@ def LoginView(request):
 
     serialized_user = LogInSerializer(user).data
 
-    # generates refrest token with user data
-    refresh = RefreshToken.for_user(user)
-    access_token = str(refresh.access_token)
-    refresh_token = str(refresh)
+    user_agent = get_user_agent(request)
 
-    response = Response({
-        'access_token': access_token,
-        'user': serialized_user,
-    })
+    if user_agent.is_mobile:
 
-    # sets cookie header and value (for app and website : you have to save this cookie)
-    response.set_cookie(key='refreshtoken', value=refresh_token, httponly=True)
-    
-    return response
+        # generates refrest token with user data
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
 
+        response = Response({
+            'access_token': access_token,
+            'user': serialized_user,
+        })
+
+        # sets cookie header and value (for app and website : you have to save this cookie)
+        response.set_cookie(key='refreshtoken', value=refresh_token, httponly=True)
+
+        return response
+
+    if user_agent.is_pc:
+        user = authenticate(phone=serialized_user['phone'], password=serialized_user['password'])
 
 """
 VIEW for Logout API 

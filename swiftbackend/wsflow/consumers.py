@@ -24,6 +24,8 @@ class flowConsumer(CreateModelMixin,PaginatedModelListMixin, GenericAsyncAPICons
     serializer_class = RideSerializer
 
     def get_queryset(self, **kwargs) -> QuerySet:
+    
+
         if kwargs['action'] == 'list':
             collegeName = kwargs['collegeName']
             return SwiftUser.objects.filter(collegeName=collegeName)

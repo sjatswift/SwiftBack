@@ -44,12 +44,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_user_agents',
     'rest_framework_simplejwt',
     "phonenumber_field",
 
     'rootApp',
     'apis',
     'wsflow',
+
 
 ]
 
@@ -61,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'swiftbackend.urls'
@@ -84,6 +87,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'swiftbackend.wsgi.application'
 ASGI_APPLICATION = 'swiftbackend.asgi.application'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
+USER_AGENTS_CACHE = 'default'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

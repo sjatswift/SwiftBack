@@ -30,7 +30,6 @@ class SwiftUser(AbstractUser, PermissionsMixin):
 
 
 
-    user_id = models.UUIDField(default=uuid4,unique=True, editable=False)
     
     username = models.CharField(max_length=255,null=True,blank=True) 
     email = models.EmailField(unique=True)
@@ -59,7 +58,7 @@ class SwiftUser(AbstractUser, PermissionsMixin):
     referral = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.username
                                                                           
     def tokens(self):
         refresh = RefreshToken.for_user(self)
