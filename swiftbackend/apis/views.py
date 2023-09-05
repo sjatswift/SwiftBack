@@ -1,5 +1,6 @@
 from django.shortcuts import render
-
+from django.http import JsonResponse
+import json
 # Create your views here.
 
 from rest_framework import status,exceptions
@@ -7,10 +8,11 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.authentication import SessionAuthentication
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django_user_agents.utils import get_user_agent
-from django.contrib.auth import authenticate
+from django.contrib.auth import login
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -99,31 +101,29 @@ _____________________________
 @csrf_exempt
 @api_view(['POST'])
 def LoginView(request):
-    
-    # fetches the custom user model 
     User = get_user_model()
 
-    username = request.data.get('username')
+    phone = request.data.get('phone')
     password = request.data.get('password')
 
+ 
+    if phone is None or password is None:
+        raise exceptions.AuthenticationFailed('Phone and password are rsequired')
 
 
-    if username is None or password is None:
-        raise exceptions.AuthenticationFailed('Username and password are required')
+    
 
-    user = User.objects.filter(username=username).first()
-
-    if user is None or not user.check_password(password):
-        raise exceptions.AuthenticationFailed('Invalid username or password')
-
-
-
-    serialized_user = LogInSerializer(user).data
 
     user_agent = get_user_agent(request)
 
     if user_agent.is_mobile:
 
+        user = User.objects.get(phone=phone).first()
+
+        if user is None or not user.check_password(password):
+            raise exceptions.AuthenticationFailed('Invalid username or password')
+
+        serialized_user = LogInSerializer(user).data
         # generates refrest token with user data
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
@@ -140,8 +140,17 @@ def LoginView(request):
         return response
 
     if user_agent.is_pc:
-        user = authenticate(phone=serialized_user['phone'], password=serialized_user['password'])
+        currentUser = User.objects.get(phone = phone)
 
+        if currentUser.check_password(password):
+            login(request,currentUser)
+            context = {'message':"Auth done"}
+            return JsonResponse(context)
+        
+        failmessage = {'message':"Auth failed"}
+        return JsonResponse(failmessage)
+
+    
 """
 VIEW for Logout API 
 Method : POST

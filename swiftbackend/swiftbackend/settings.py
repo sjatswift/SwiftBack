@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_user_agents',
     'rest_framework_simplejwt',
     "phonenumber_field",
+    'corsheaders',
 
     'rootApp',
     'apis',
@@ -64,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
+    'corsheaders.middleware.CorsMiddleware', 
 ]
 
 ROOT_URLCONF = 'swiftbackend.urls'
@@ -87,14 +89,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'swiftbackend.wsgi.application'
 ASGI_APPLICATION = 'swiftbackend.asgi.application'
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
 
-USER_AGENTS_CACHE = 'default'
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -159,6 +155,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+         'rest_framework.authentication.SessionAuthentication',
     ],
 }
 
@@ -176,3 +173,42 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+
+# CORS Settings
+
+# CORS Settings
+CORS_ALLOW_ALL_ORIGINS = False  # Set to True to allow all origins (not recommended for production)
+CORS_ALLOW_CREDENTIALS = True  # Set to True if your frontend and backend share cookies/authentication
+
+# List of allowed origins (e.g., your React app's domain)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Replace with your React app's URL
+]
+
+# List of allowed HTTP methods
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+# List of allowed HTTP headers
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# Additional CORS settings
+CORS_EXPOSE_HEADERS = []
+CORS_PREFLIGHT_MAX_AGE = 86400

@@ -10,7 +10,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 class LogInSerializer(serializers.ModelSerializer):
     class Meta:
         model = SwiftUser
-        fields = ['email', 'role']  # Exclude 'password' field
+        fields = ['username', 'password']  # Exclude 'password' field
 
     
  
