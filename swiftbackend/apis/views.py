@@ -160,9 +160,72 @@ Method : POST
 @csrf_exempt
 @api_view(['POST'])
 def LogoutView(request):
+
     response = Response({'message': 'Logged out successfully'})
 
     # Delete the refresh token cookie
     response.delete_cookie('refreshtoken')
 
     return response
+
+
+
+import pyotp
+import base64
+
+@csrf_exempt
+@api_view(['GET','POST'])
+def OTPview(request):
+    user_phone = "12191" #make this users phone number through session?
+    user_phone = base64.b32encode(str(user_phone).encode())
+    totp = pyotp.TOTP(user_phone,4,None,user_phone,"swiftride",120)
+    
+    user_agent = get_user_agent(request)
+
+
+    if request.method == 'GET':
+        otp = totp.now()
+
+        return JsonResponse({"otp":otp})
+    
+    if request.method == 'POST':
+        otp_recieved = request.data.get('otp')
+
+        if totp.verify(otp_recieved):
+
+            if user_agent.is_mobile: # for mobile apps
+                return JsonResponse({'message':"noice"})
+
+            if user_agent.is_pc: # for pc 
+                return JsonResponse({'message':"noice"})
+
+            if user_agent.browser.family == 'okhttp' : # for mobile web browsers
+                return JsonResponse({'message':"noice"})
+
+
+
+from .models import Vehicles
+from .serializers import VehiclesSerializer 
+
+@api_view(['GET', 'POST','PATCH'])
+def VehiclesView(request):
+    if request.method == 'GET':
+        vehicles = Vehicles.objects.all()
+        serializer = VehiclesSerializer(vehicles, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = VehiclesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'PATCH':
+        driver_pk = request.data.get('driver')
+        vehicleToBeUpdated = Vehicles.objects.get(driver=driver_pk)
+        serializer = VehiclesSerializer(vehicleToBeUpdated,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

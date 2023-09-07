@@ -12,7 +12,11 @@ class LogInSerializer(serializers.ModelSerializer):
         model = SwiftUser
         fields = ['username', 'password']  # Exclude 'password' field
 
-    
- 
 
+from .models import Vehicles
+
+class VehiclesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vehicles
+        fields = ('__all__')
 

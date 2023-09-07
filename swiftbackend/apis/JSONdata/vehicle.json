@@ -1,0 +1,32 @@
+{
+  "car_makers": [
+    {
+      "name": "Toyota",
+      "models": ["Camry", "Corolla", "Prius"]
+    },
+    {
+      "name": "Ford",
+      "models": ["Mustang", "F-150", "Explorer"]
+    },
+    {
+      "name": "Volkswagen",
+      "models": ["Golf", "Passat", "Jetta"]
+    },
+    {
+      "name": "Honda",
+      "models": ["Civic", "Accord", "CR-V"]
+    },
+    {
+      "name": "Chevrolet",
+      "models": ["Silverado", "Equinox", "Malibu"]
+    },
+    {
+      "name": "Nissan",
+      "models": ["Altima", "Maxima", "Rogue"]
+    },
+    {
+      "name": "BMW",
+      "models": ["3 Series", "5 Series", "X5"]
+    }
+  ]
+}
