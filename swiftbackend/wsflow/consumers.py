@@ -9,10 +9,10 @@ from rest_framework import status
 
 from .serializers import RideSerializer,ShowDriverListSerializer
 from apis.serializers import SignUpSerializer
-from .models import Ride
+from .models import Ride,CurrentLocation
 from rootApp.models import SwiftUser
 import json
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync,sync_to_async
 
 
 # permissions
@@ -31,28 +31,17 @@ class flowConsumer(CreateModelMixin,PaginatedModelListMixin, GenericAsyncAPICons
             return SwiftUser.objects.filter(collegeName=collegeName)
         return super().get_queryset(**kwargs)
 
-    # def filter_queryset(self, queryset: QuerySet, **kwargs) -> QuerySet:
-    #     return super().filter_queryset(queryset, **kwargs)
-
+ 
     def get_serializer_class(self, **kwargs) -> type[Serializer]:
         if kwargs['action'] == 'list':
             return ShowDriverListSerializer
         
         return super().get_serializer_class(**kwargs)
 
-    # async def websocket_receive(self, event):
-    #     text_data = event.get("text")
-    #     json_data = json.loads(text_data)
-
-    #     message_type = json_data.get('type')
-    #     if message_type == 'location_update':
-    #          self.handle_location_update(json_data)
-    #     elif message_type == 'show_drivers':
-    #          self.handle_show_drivers(json_data)
+  
 
     @action() 
-    def handle_location_update(self, **kwargs):
-
+    async def  handle_location_update(self, **kwargs):
         latitude = kwargs.get('latitude')
         longitude = kwargs.get('longitude')
 
@@ -62,7 +51,22 @@ class flowConsumer(CreateModelMixin,PaginatedModelListMixin, GenericAsyncAPICons
             'longitude': longitude,
         }
 
-        return location_json, 200
+        await self.send(json.dumps({
+            "type":"websocket.send",
+            "location": location_json
+        }))
+
+        current_location_json = {
+            'latitude': latitude,
+            'longitude': longitude,
+        }
+
+        current_ride = await sync_to_async(Ride.objects.get)(ride_id = "5ea2219a-efe4-4851-8335-f0cce663b389") 
+        current_location = CurrentLocation(ride = current_ride , current_location = current_location_json )
+
+        await sync_to_async(current_location.save)(location_json)
+
+        # return location_json, 200
 
     @action()       
     def list(self, **kwargs):
@@ -72,54 +76,5 @@ class flowConsumer(CreateModelMixin,PaginatedModelListMixin, GenericAsyncAPICons
         data, response = async_to_sync(super().list)(**kwargs)
         return data, response
  
-        # print(json.dumps(location_json))
-        # self.send_json(json.dumps(location_json))
-
-    # def handle_message_update(self, data):
-    #     ride_id = data.get('ride_id')
-    #     message_text = data.get('message_text')
-    #     sender_id = data.get('sender_id')
-    #     receiver_id = data.get('receiver_id')
-
-    #     try:
-    #         room = Ride.objects.get(id=ride_id)
-    #         sender = SwiftUser.objects.get(id=sender_id)
-    #         receiver = SwiftUser.objects.get(id=receiver_id)
-
-    #         message = Message.objects.create(
-    #             room=room,
-    #             message_text=message_text,
-    #             sender=sender,
-    #             receiver=receiver
-    #         )
-
-    #         # Broadcast the message to all users in the same room
-    #         self.send_group_message({
-    #             'type': 'message_update',
-    #             'message': {
-    #                 'id': message.id,
-    #                 'room_id': str(room.id),
-    #                 'message_text': message_text,
-    #                 'sender_id': str(sender.id),
-    #                 'receiver_id': str(receiver.id),
-    #                 'time_sent': message.time_sent.isoformat(),
-    #             }
-    #         })
-
-    #     except (Ride.DoesNotExist, SwiftUser.DoesNotExist):
-    #         pass
-
-
-    # @action() 
-    # def handle_show_drivers(self, **kwargs):
-    #     # permission_classes = [IsTaker]
-    #     collegeName = kwargs.get('collegeName')
-    #     users = self.handle_user_queryset(collegeName)
-    #     user_data = SignUpSerializer(users,many=True).data
-    #     driverlist_json = {
-    #         'type': 'show_drivers',
-    #         'driverlist': user_data,
-    #     }
-
-    #     self.send(json.dumps(driverlist_json))
-
+ 
+    

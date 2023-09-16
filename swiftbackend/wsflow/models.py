@@ -21,3 +21,28 @@ class Ride(models.Model):
     arrival_time = models.DateTimeField()
     departure_time = models.DateTimeField()
 
+    status_CHOICES = [
+        ('Arrived', 'Arrived'),
+        ('En Route', 'En Route'),
+        ('Waiting for Pickup', 'Waiting for Pickup'),
+        ('In Progress - En Route', 'In Progress - En Route'),
+        ('In Progress - On Pickup', 'In Progress - On Pickup'),
+        ('Cancelled', 'Cancelled'),
+        ('Booked', 'Booked'),
+        ('Completed', 'Completed'),
+        ('Delayed', 'Delayed'),
+        ('Driver Assigned', 'Driver Assigned'),
+        ('Payment Pending', 'Payment Pending'),
+        ('Review Pending', 'Review Pending'),
+        ('Expired', 'Expired'),
+        ('Rescheduled', 'Rescheduled'),
+        ('No Show', 'No Show'),
+    ]
+    
+    current_status = models.CharField(max_length=30, choices=status_CHOICES, default='Booked')
+
+
+class CurrentLocation(models.Model):
+    ride = models.OneToOneField(Ride,on_delete=models.CASCADE)
+    current_location = models.JSONField(default=None)
+ 

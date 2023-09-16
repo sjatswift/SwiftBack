@@ -13,10 +13,10 @@ class LogInSerializer(serializers.ModelSerializer):
         fields = ['username', 'password']  # Exclude 'password' field
 
 
-from .models import Vehicles
+from .models import Vehicle
 
 class VehiclesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Vehicles
+        model = Vehicle
         fields = ('__all__')
 

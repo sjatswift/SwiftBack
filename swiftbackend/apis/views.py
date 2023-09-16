@@ -204,13 +204,13 @@ def OTPview(request):
 
 
 
-from .models import Vehicles
+from .models import Vehicle
 from .serializers import VehiclesSerializer 
 
 @api_view(['GET', 'POST','PATCH'])
 def VehiclesView(request):
     if request.method == 'GET':
-        vehicles = Vehicles.objects.all()
+        vehicles = Vehicle.objects.all()
         serializer = VehiclesSerializer(vehicles, many=True)
         return Response(serializer.data)
 
@@ -223,7 +223,7 @@ def VehiclesView(request):
 
     if request.method == 'PATCH':
         driver_pk = request.data.get('driver')
-        vehicleToBeUpdated = Vehicles.objects.get(driver=driver_pk)
+        vehicleToBeUpdated = Vehicle.objects.get(driver=driver_pk)
         serializer = VehiclesSerializer(vehicleToBeUpdated,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()

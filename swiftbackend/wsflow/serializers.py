@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Ride
 from rootApp.models import SwiftUser
+from apis.models import Vehicle
 
 
 # class MessageSerializer(serializers.ModelSerializer):
@@ -102,9 +103,14 @@ class RideSerializer(serializers.ModelSerializer):
         model = Ride
         fields = "__all__"
 
+class VehicleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vehicle
+        fields = ('vehicle_company','vehicle_model','registration_number','color')
 
 class ShowDriverListSerializer(serializers.ModelSerializer):
+    vehicle = VehicleSerializer()
     class Meta:
         model = SwiftUser
-        fields = ('username','phone','gender','profile_pic')
-    
+        fields = ('username','phone','gender','profile_pic', 'vehicle')
+

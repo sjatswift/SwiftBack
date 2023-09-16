@@ -27,7 +27,7 @@ COLOR_CHOICES = [
 ]
 
 
-class Vehicles(models.Model):
+class Vehicle(models.Model):
     driver = models.OneToOneField(SwiftUser, on_delete=models.CASCADE, null=True, blank=True)
     
     # Define choices for vehicle company

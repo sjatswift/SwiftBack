@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from firebase_admin import initialize_app
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,7 +55,7 @@ INSTALLED_APPS = [
     'apis',
     'wsflow',
 
-
+    "fcm_django",
 
 ]
 
@@ -213,3 +215,24 @@ CORS_ALLOW_HEADERS = [
 # Additional CORS settings
 CORS_EXPOSE_HEADERS = []
 CORS_PREFLIGHT_MAX_AGE = 86400
+
+
+
+# FCM Settings
+
+FIREBASE_APP = initialize_app(name='firebase_push_app')
+
+FCM_DJANGO_SETTINGS = {
+     # an instance of firebase_admin.App to be used as default for all fcm-django requests
+     # default: None (the default Firebase app)
+    "DEFAULT_FIREBASE_APP": None,
+     # default: _('FCM Django')
+    "APP_VERBOSE_NAME": "push_notifications",
+     # true if you want to have only one active device per registered user at a time
+     # default: False
+    "ONE_DEVICE_PER_USER": True,
+     # devices to which notifications cannot be sent,
+     # are deleted upon receiving error response from FCM
+     # default: False
+    "DELETE_INACTIVE_DEVICES": False,
+}
