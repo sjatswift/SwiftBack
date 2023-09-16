@@ -13,7 +13,7 @@ from .models import Ride,CurrentLocation
 from rootApp.models import SwiftUser
 import json
 from asgiref.sync import async_to_sync,sync_to_async
-
+from .signals import change_of_state_signal 
 
 # permissions
 from rest_framework.permissions import IsAuthenticated
@@ -76,5 +76,7 @@ class flowConsumer(CreateModelMixin,PaginatedModelListMixin, GenericAsyncAPICons
         data, response = async_to_sync(super().list)(**kwargs)
         return data, response
  
- 
-    
+    @action()
+    def start_ride(self, **kwargs):
+        change_of_state_signal.send(sender=SwiftUser,state_option="En Route")
+        return "started" , 200

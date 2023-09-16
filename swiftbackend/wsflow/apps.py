@@ -7,3 +7,4 @@ class WsflowConfig(AppConfig):
 
     def ready(self):
         import wsflow.signals
+        import wsflow.recievers

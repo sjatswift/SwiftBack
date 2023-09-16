@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'wsflow',
 
     "fcm_django",
+    'django_q',
 
 ]
 
@@ -235,4 +236,34 @@ FCM_DJANGO_SETTINGS = {
      # are deleted upon receiving error response from FCM
      # default: False
     "DELETE_INACTIVE_DEVICES": False,
+}
+
+
+# Q2 
+
+Q_CLUSTER = {
+    'name': 'myproject',
+    'workers': 8,
+    'recycle': 500,
+    'timeout': 60,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q2',
+    'redis': {
+        'host': '127.0.0.1',
+        'port': 6379,
+        'db': 0, },
+    'ALT_CLUSTERS': {
+        'long': {
+            'timeout': 3000,
+            'retry': 3600,
+            'max_attempts': 2,
+        },
+        'short': {
+            'timeout': 10,
+            'max_attempts': 1,
+        },
+    }
 }

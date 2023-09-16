@@ -25,3 +25,11 @@ def locationPing(sender, instance, created, **kwargs):
 
 
 
+
+
+# custom signals
+
+from django import dispatch
+
+change_of_state_signal = dispatch.Signal(["state_option"]) # options are present in models 
+
