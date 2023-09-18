@@ -19,6 +19,9 @@ from .signals import change_of_state_signal
 from rest_framework.permissions import IsAuthenticated
 from rootApp.permissions import IsTaker
 
+
+from django_q.tasks import async_task
+
 class flowConsumer(CreateModelMixin,PaginatedModelListMixin, GenericAsyncAPIConsumer):
     queryset = Ride.objects.all()
     serializer_class = RideSerializer
